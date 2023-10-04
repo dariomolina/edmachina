@@ -1,0 +1,36 @@
+# Ignorar archivos generados por Python
+*.pyc
+__pycache__/
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Ignorar archivos generados por npm/yarn para proyectos de React
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Ignorar archivos de compilación de React (por ejemplo, para proyectos con Create React App)
+/build/
+
+# Ignorar archivos de configuración locales
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignorar archivos de log de desarrollo (por ejemplo, para proyectos con Create React App)
+logs/
+log-debug.log
+
+# Ignorar archivos de dependencias de Windows
+Thumbs.db
+ehthumbs.db
+
+# Ignorar archivos de MacOS
+.DS_Store
+
+# Ignorar archivos de respaldo
+*~
