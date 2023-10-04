@@ -1,0 +1,41 @@
+
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16.0-alpine3.18
+    container_name: db
+    restart: always
+    env_file:
+      - ./backend/.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - edmachina
+
+  backend:
+    container_name: backend
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    env_file:
+      - backend/.env
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+    tty: true
+    stdin_open: true
+    networks:
+      - edmachina
+
+volumes:
+  postgres_data:
+
+networks:
+  edmachina:
+
