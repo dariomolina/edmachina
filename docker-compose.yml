@@ -33,8 +33,26 @@ services:
     networks:
       - edmachina
 
+  frontend:
+    container_name: frontend
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    volumes:
+      - './frontend:/app/'
+      - node_modules:/app/node_modules
+    depends_on:
+      - backend
+    env_file:
+      - ./backend/.env
+    networks:
+      - edmachina
+
 volumes:
   postgres_data:
+  node_modules:
 
 networks:
   edmachina:

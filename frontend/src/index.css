@@ -1,0 +1,14 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.left-elemets {
+  text-align: left;
+}
+
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
