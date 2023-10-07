@@ -6,6 +6,7 @@ __pycache__/
 dist/
 build/
 *.egg
+.idea
 
 # Ignorar archivos generados por npm/yarn para proyectos de React
 node_modules/
