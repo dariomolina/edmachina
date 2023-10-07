@@ -4,7 +4,7 @@ from pydantic import BaseModel
 class SubjectsBase(BaseModel):
     name: str
     study_duration: int
-    carrera_id: int
+    career_id: int
 
 
 class SubjectsCreateSchema(SubjectsBase):
@@ -15,4 +15,4 @@ class SubjectsSchema(SubjectsBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

@@ -9,7 +9,8 @@ import settings
 # Models to generate migrations
 from models.users import User
 from models.leads import Lead
-from models.academic import Career, Subjects, EnrollmentStudy
+from models.academic import Career, Subjects
+from models.enrollment import EnrolledProgram, EnrollmentStudy
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

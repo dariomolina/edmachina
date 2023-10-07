@@ -1,13 +1,17 @@
+import json
 from typing import Dict, List
 
-from fastapi import FastAPI, Body, Depends, HTTPException, status
+from fastapi import FastAPI, Request, Body, Depends, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import NoResultFound, IntegrityError
 from sqlalchemy.orm import Session
 
 from models import users as user_model
-from models.academic import Career, EnrollmentStudy, Subjects
+from models.academic import Career, Subjects
+from models.enrollment import EnrolledProgram, EnrollmentStudy
 from models.leads import Lead
 from schemas.careers import CareerCreateSchema, CareerSchema
+from schemas.enrolled_program import EnrolledProgramSchema, EnrolledProgramCreateSchema
 from schemas.enrollment_study import EnrollmentStudyCreateSchema, EnrollmentStudySchema
 from schemas.leads import LeadCreateSchema, LeadSchema
 from schemas.subjects import SubjectsSchema, SubjectsCreateSchema
@@ -16,6 +20,14 @@ from services.db import users as user_db_services
 from settings import get_db
 
 app = FastAPI()
+
+app.add_middleware(
+ CORSMiddleware,
+ allow_origins=["http://localhost:3000"], # Add your frontend origin here
+ allow_credentials=True,
+ allow_methods=["*"],
+ allow_headers=["*"],
+ )
 
 
 @app.post('/signup', response_model=UserSchema)
@@ -64,22 +76,40 @@ def login(
 
 
 @app.post("/career/")
-def create_career(
-    career: CareerCreateSchema,
+async def create_career(
+    request: Request,
     session: Session = Depends(get_db)
 ):
     try:
+        raw_data = await request.body()
+        data_str = raw_data.decode("utf-8")
+        data_dict = json.loads(data_str)
+        career = CareerCreateSchema(**data_dict)
         db_career = Career(**career.dict())
         session.add(db_career)
         session.commit()
         session.refresh(db_career)
         session.close()
-    except IntegrityError as error:
+
+    except json.JSONDecodeError as json_error:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=error.detail
+            status_code=400,
+            detail=str(json_error)
         )
-    return db_career
+
+    except ValueError as validation_error:
+        raise HTTPException(
+            status_code=422,  # Unprocessable Entity
+            detail=str(validation_error)
+        )
+
+    except IntegrityError as db_error:
+        raise HTTPException(
+            status_code=500,  # Internal Server Error
+            detail=str(db_error.detail)
+        )
+
+    return {"message": "Carrera creada exitosamente"}
 
 
 @app.get("/career/", response_model=List[CareerSchema])
@@ -131,6 +161,7 @@ def create_lead(
 @app.get("/leads/", response_model=List[LeadSchema])
 def get_leads(skip: int = 0, limit: int = 10, session: Session = Depends(get_db)):
     leads = session.query(Lead).offset(skip).limit(limit).all()
+    session.close()
     return leads
 
 
@@ -144,6 +175,24 @@ def read_lead(
     return lead
 
 
+@app.post("/enrolled_program/", response_model=EnrolledProgramSchema)
+async def create_enrolled_program(
+    enrolled_program: EnrolledProgramCreateSchema,
+    session: Session = Depends(get_db)
+):
+    try:
+        db_enrolled_program = EnrolledProgram(**enrolled_program.dict())
+        session.add(db_enrolled_program)
+        session.commit()
+        session.refresh(db_enrolled_program)
+        session.close()
+    except IntegrityError as error:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=error.detail
+        )
+
+
 @app.post("/enrollment-study/", response_model=EnrollmentStudySchema)
 async def create_enrollment_study(
     enrollment_study: EnrollmentStudyCreateSchema,
@@ -154,6 +203,7 @@ async def create_enrollment_study(
         session.add(db_enrollment_study)
         session.commit()
         session.refresh(db_enrollment_study)
+        session.close()
     except IntegrityError as error:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
