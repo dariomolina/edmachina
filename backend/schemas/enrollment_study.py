@@ -1,8 +1,11 @@
+from datetime import datetime
+
 from pydantic import BaseModel
 
 
 class EnrollmentStudyBase(BaseModel):
-    enrolled_program_id: int
+    lead_id: int
+    career_id: int
     subject_id: int
 
 
@@ -12,6 +15,17 @@ class EnrollmentStudyCreateSchema(EnrollmentStudyBase):
 
 class EnrollmentStudySchema(EnrollmentStudyBase):
     id: int
+    registration_date: datetime
 
     class Config:
         from_attributes = True
+
+
+class EnrollmentStudyListSchema(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+    dni: int
+    career_name: str
+    subject_name: str
+    registration_date: datetime

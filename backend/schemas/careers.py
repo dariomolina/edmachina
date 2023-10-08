@@ -1,16 +1,23 @@
 from pydantic import BaseModel
 
 
-class CareerBase(BaseModel):
+class CareerBaseSchema(BaseModel):
     name: str
+
+
+class CareerCreateSchema(CareerBaseSchema):
     study_duration: int
 
 
-class CareerCreateSchema(CareerBase):
-    pass
+class CareerSchema(CareerBaseSchema):
+    id: int
+    study_duration: int
+
+    class Config:
+        from_attributes = True
 
 
-class CareerSchema(CareerBase):
+class CareerSelectSchema(CareerBaseSchema):
     id: int
 
     class Config:

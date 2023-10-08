@@ -1,18 +1,33 @@
 from pydantic import BaseModel
 
 
-class SubjectsBase(BaseModel):
+class SubjectsCreateSchema(BaseModel):
     name: str
-    study_duration: int
     career_id: int
+    study_duration: int
 
 
-class SubjectsCreateSchema(SubjectsBase):
-    pass
-
-
-class SubjectsSchema(SubjectsBase):
+class SubjectsSchema(BaseModel):
     id: int
+    name: str
+    career_id: int
+    study_duration: int
+
+    class Config:
+        from_attributes = True
+
+
+class SubjectsListSchema(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        from_attributes = True
+
+
+class SubjectCareerSchema(SubjectsListSchema):
+    career_name: str
+    study_duration: int
 
     class Config:
         from_attributes = True

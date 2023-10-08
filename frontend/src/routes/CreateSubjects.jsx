@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { ConfirmationModal } from './components/ConfirmationModal'
 
-const CreateCareer = () => {
+const CreateSubjects = () => {
 
   const [formState, setFormState] = useState({
-    careerName: '',
-    studyDuration: 0
+    subjectName: '',
+    studyDuration: 0,
+		careerId: 0
   })
   const [status, setStatus ] = useState(500)
   const [responseOk, setResponseOk] = useState(false)
+	const [careerList, setCareerList] = useState([])
 
-  const { careerName, studyDuration } = formState
+  const { subjectName, studyDuration, careerId } = formState
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -25,19 +27,41 @@ const CreateCareer = () => {
   }
 
   const handleConfirmSubmit = async () => {
-    const url = `${import.meta.env.VITE_BACKEND_URL}/career`
+    const url = `${import.meta.env.VITE_BACKEND_URL}/subject-create`
     const response = await fetch(url , {
       method: "POST",
-      //headers: {
-      //  'Content-Type': 'application/json',
-      //},
-      body: JSON.stringify({ name: careerName, study_duration: parseInt(studyDuration) }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+				name: subjectName,
+				study_duration: parseInt(studyDuration),
+				career_id: parseInt(careerId)
+			}),
     })
     setStatus(response.status)
     setResponseOk(response.ok)
     const data = await response.json();
-    console.log('Carrera creada:', data);
+    console.log('Materia creada:', data);
   };
+
+	const handleGetCareer = async () => {
+    const url = `${import.meta.env.VITE_BACKEND_URL}/select-careers/`
+    const response = await fetch(url , {
+      method: "GET",
+      //headers: {
+      //  'Content-Type': 'application/json',
+      //},
+      params: {},
+    })
+    const data = await response.json();
+		setCareerList(data)
+    console.log('Materia encontrada:', data);
+  };
+
+	useEffect(() => {
+    handleGetCareer();
+  }, []);
 
   return (
     <>
@@ -46,13 +70,13 @@ const CreateCareer = () => {
         <form onSubmit={ handleSubmit } className="container left-elemets border">
           <br></br>
           <div className="input-group mb-3">
-            <span className="input-group-text">Carrera</span>
+            <span className="input-group-text">Materia</span>
             <input 
               type="text"
               className="form-control"
               aria-label="Amount (to the nearest dollar)"
-              name="careerName"
-              value={ careerName }
+              name="subjectName"
+              value={ subjectName }
               onChange={ handleChange }
             />
           </div>
@@ -67,6 +91,23 @@ const CreateCareer = () => {
               onChange={ handleChange }
             />
           </div>
+					<div className="input-group mb-3">
+						<span className="input-group-text">Carrera</span>
+						<select
+							className="form-select"
+							id="inputGroupSelect03"
+							aria-label="Example select with button addon"
+							name="careerId"
+							onChange={handleChange}
+						>
+							<option>--- Seleccione una materia ...</option>
+							{careerList.map((item) => {
+								return (
+									<option key={ item.id } value={ item.id }>{ item.name }</option>
+								)
+							})}
+						</select>
+					</div>
           <ConfirmationModal
             onConfirm={handleConfirmSubmit}
             status={ status }
@@ -76,9 +117,8 @@ const CreateCareer = () => {
         <button type="submit" className="btn btn-lg btn-primary mt-5 w-100" data-bs-target="#exampleModalToggle" data-bs-toggle="modal">Great, thanks!</button>
       </div>
     </div>
-
     </>
   )
 }
 
-export { CreateCareer }
+export { CreateSubjects }

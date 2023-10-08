@@ -10,7 +10,7 @@ import settings
 from models.users import User
 from models.leads import Lead
 from models.academic import Career, Subjects
-from models.enrollment import EnrolledProgram, EnrollmentStudy
+from models.enrollment import EnrollmentStudy
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

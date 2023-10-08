@@ -20,6 +20,33 @@ export const NavBar = () => {
 								<li><NavLink className="nav-link" to="/list-career">Listar</NavLink></li>
 							</ul>
 						</li>
+						<li className="nav-item dropdown">
+							<Link className="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								Materias
+							</Link>
+							<ul className="dropdown-menu">
+								<li><NavLink className="nav-link" to="/create-subjects">Crear</NavLink></li>
+								<li><NavLink className="nav-link" to="/list-subjects">Listar</NavLink></li>
+							</ul>
+						</li>
+						<li className="nav-item dropdown">
+							<Link className="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								Leads
+							</Link>
+							<ul className="dropdown-menu">
+								<li><NavLink className="nav-link" to="/create-lead">Crear</NavLink></li>
+								<li><NavLink className="nav-link" to="/list-lead">Listar</NavLink></li>
+							</ul>
+						</li>
+						<li className="nav-item dropdown">
+							<Link className="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								Inscripción
+							</Link>
+							<ul className="dropdown-menu">
+								<li><NavLink className="nav-link" to="/create-enrollment">Crear</NavLink></li>
+								<li><NavLink className="nav-link" to="/list-enrollment">Listar</NavLink></li>
+							</ul>
+						</li>
 					</ul>
 				</div>
 			</div>
