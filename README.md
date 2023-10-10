@@ -1,7 +1,7 @@
 
 ## Instalación del proyecto
 
-#### Pararse en la carpeta edmachina, donde se encuentra el docker-compose.yml y correr comando de docker para buildear imagenes de docker
+#### Pararse en la carpeta edmachina, donde se encuentra el docker-compose.yml y correr comando de docker para buildear las imagenes de docker
 * docker-compose build
 
 #### Para ejecutar los contenedores de backend, frontend y postgres
@@ -20,7 +20,7 @@
 
 ## Documentación de la Api
 
-#### Una vez que los contenedores estén en ejecición, se puede tener acceso a la documentación de los endpoints realizados, ingresando a:
+#### Una vez que los contenedores estén en ejecución, se puede tener acceso a la documentación de los endpoints generados, ingresando a:
 * http://localhost:8000/docs
 
 
