@@ -55,7 +55,6 @@ const CreateEnrollmentStudy = () => {
     setStatus(response.status)
     const data = await response.json();
     setResponseValue(data)
-    setFormState(initialForm)
   };
 
 	const handleGetLead = async () => {

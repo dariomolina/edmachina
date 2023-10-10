@@ -5,6 +5,7 @@ from fastapi import FastAPI, Request, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from starlette.middleware.cors import CORSMiddleware
+from psycopg2.errors import UniqueViolation
 
 from models.academic import Career, Subjects
 from models.leads import Lead
@@ -226,6 +227,11 @@ async def post_create_lead(
         raise HTTPException(
             status_code=500,  # Internal Server Error
             detail=str(db_error)
+        )
+    except UniqueViolation as db_unique_error:
+        raise HTTPException(
+            status_code=500,  # Unique error
+            detail=str(db_unique_error)
         )
     return db_lead.id
 

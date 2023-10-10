@@ -43,7 +43,7 @@ const ConfirmationModal = ({ onConfirm, status, responseValue }) => {
 				<div className="modal-body">
 					{ status === 200 ?
 						<Alert message={ `Registro exitoso con id: ${responseValue}` } typeAlert="success" />
-					  : <Alert message="Hubo un error en la solicitud" typeAlert="danger" /> 
+					  : <Alert message={ `Hubo un error en la solicitud: ${responseValue.detail}` } typeAlert="danger" /> 
 					}
 				</div>
 				<div className="modal-footer">

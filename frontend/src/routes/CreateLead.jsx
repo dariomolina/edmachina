@@ -7,7 +7,7 @@ const CreateLead = () => {
     firstName: '',
     lastName: '',
     email: '',
-		dni: 0,
+		dni: '',
     address: '',
     phone: ''
   }
