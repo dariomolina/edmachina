@@ -1,6 +1,19 @@
 import React from 'react';
 
-const ConfirmationModal = ({ onConfirm, status, responseOk }) => {
+
+export const Alert = ({ message, typeAlert }) => {
+	return (
+		<>
+		<div className={ `alert alert-${typeAlert}` } role="alert">
+			{ message }
+		</div>
+		</> 
+	)
+}
+
+
+
+const ConfirmationModal = ({ onConfirm, status, responseValue }) => {
 
 	return (
   	<>
@@ -8,14 +21,14 @@ const ConfirmationModal = ({ onConfirm, status, responseOk }) => {
 		<div className="modal-dialog modal-dialog-centered">
 			<div className="modal-content">
 				<div className="modal-header">
-					<h1 className="modal-title fs-5" id="exampleModalToggleLabel">Modal 1</h1>
+					<h1 className="modal-title fs-5" id="exampleModalToggleLabel">Confirmación</h1>
 					<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div className="modal-body">
-					Show a second modal and hide this one with the button below.
+					Seleccione Confirmar para crear un nuevo registro
 				</div>
 				<div className="modal-footer">
-					<button onClick={ onConfirm } className="btn btn-primary" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal">Open second modal</button>
+					<button onClick={ onConfirm } className="btn btn-success" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal">Confirmar</button>
 				</div>
 			</div>
 		</div>
@@ -24,14 +37,17 @@ const ConfirmationModal = ({ onConfirm, status, responseOk }) => {
 		<div className="modal-dialog modal-dialog-centered">
 			<div className="modal-content">
 				<div className="modal-header">
-					<h1 className="modal-title fs-5" id="exampleModalToggleLabel2">Modal 2</h1>
+					<h1 className="modal-title fs-5" id="exampleModalToggleLabel2">Información</h1>
 					<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div className="modal-body">
-					Hide this modal and show the first with the button below.
+					{ status === 200 ?
+						<Alert message={ `Registro exitoso con id: ${responseValue}` } typeAlert="success" />
+					  : <Alert message="Hubo un error en la solicitud" typeAlert="danger" /> 
+					}
 				</div>
 				<div className="modal-footer">
-					<button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="button" className="btn btn-primary" data-bs-dismiss="modal">Close</button>
 				</div>
 			</div>
 		</div>

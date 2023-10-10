@@ -1,21 +1,18 @@
 import json
-from typing import Dict, List
+from typing import List
 
-from fastapi import FastAPI, Request, Body, Depends, HTTPException, status
-from sqlalchemy.exc import NoResultFound, IntegrityError
+from fastapi import FastAPI, Request, Depends, HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from starlette.middleware.cors import CORSMiddleware
 
-from models import users as user_model
 from models.academic import Career, Subjects
 from models.enrollment import EnrollmentStudy
 from models.leads import Lead
 from schemas.careers import CareerCreateSchema, CareerSchema, CareerSelectSchema
-from schemas.enrollment_study import EnrollmentStudyCreateSchema, EnrollmentStudySchema, EnrollmentStudyListSchema
+from schemas.enrollment_study import EnrollmentStudyCreateSchema, EnrollmentStudyListSchema
 from schemas.leads import LeadCreateSchema, LeadSchema, LeadListSchema
-from schemas.subjects import SubjectsSchema, SubjectsCreateSchema, SubjectsListSchema, SubjectCareerSchema
-from schemas.users import UserSchema, CreateUserSchema, UserLoginSchema
-from services.db import users as user_db_services
+from schemas.subjects import SubjectsCreateSchema, SubjectsListSchema, SubjectCareerSchema
 from settings import get_db
 
 app = FastAPI()
@@ -29,61 +26,18 @@ app.add_middleware(
 )
 
 
-@app.post('/signup', response_model=UserSchema)
-def signup(
-    payload: CreateUserSchema = Body(),
-    session: Session = Depends(get_db)
-):
-    """Processes request to register user account."""
-    payload.hashed_password = user_model.User.hash_password(payload.hashed_password)
-    return user_db_services.create_user(session, user=payload)
-
-
-@app.post('/login', response_model=Dict)
-def login(
-    payload: UserLoginSchema = Body(),
-    session: Session = Depends(get_db)
-):
-    """Processes user's authentication and returns a token
-    on successful authentication.
-
-    request body:
-
-    - username: Unique identifier for a user 'e.g' email,
-                phone number, name
-
-    - password:
-    """
-    try:
-        user: user_model.User = user_db_services.get_user(
-            session=session, email=payload.email
-        )
-    except NoResultFound:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid user credentials"
-        )
-
-    is_validated: bool = user.validate_password(payload.password)
-    if not is_validated:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid user credentials"
-        )
-
-    return user.generate_token()
-
-
-@app.post("/career/")
+@app.post("/career/", response_model=int)
 async def create_career(
     request: Request,
+    career: CareerCreateSchema,
     session: Session = Depends(get_db)
 ):
     try:
-        raw_data = await request.body()
-        data_str = raw_data.decode("utf-8")
-        data_dict = json.loads(data_str)
-        career = CareerCreateSchema(**data_dict)
+        # import pdb; pdb.set_trace()
+        # raw_data = await request.body()
+        # data_str = raw_data.decode("utf-8")
+        # data_dict = json.loads(data_str)
+        # career = CareerCreateSchema(**data_dict)
         db_career = Career(**career.dict())
         session.add(db_career)
         session.commit()
@@ -108,7 +62,7 @@ async def create_career(
             detail=str(db_error)
         )
 
-    return {"message": "Carrera creada exitosamente"}
+    return db_career.id
 
 
 @app.get("/career/", response_model=List[CareerSchema])
@@ -129,20 +83,25 @@ def get_select_subjects(session: Session = Depends(get_db)):
     return careers
 
 
-@app.post("/subject-create/", response_model=SubjectsSchema)
-async def create_subject(request: Request, session: Session = Depends(get_db)):
+@app.post("/subject-create/", response_model=int)
+async def create_subject(
+    request: Request,
+    subject: SubjectsCreateSchema,
+    session: Session = Depends(get_db)
+):
     """
     Endpoint para creacion de materia
     """
     try:
-        raw_data = await request.body()
-        data_str = raw_data.decode("utf-8")
-        data_dict = json.loads(data_str)
-        subject = SubjectsCreateSchema(**data_dict)
+        # raw_data = await request.body()
+        # data_str = raw_data.decode("utf-8")
+        # data_dict = json.loads(data_str)
+        # subject = SubjectsCreateSchema(**data_dict)
         db_subject = Subjects(**subject.dict())
         session.add(db_subject)
         session.commit()
         session.refresh(db_subject)
+        session.close()
     except json.JSONDecodeError as json_error:
         raise HTTPException(
             status_code=400,
@@ -158,7 +117,7 @@ async def create_subject(request: Request, session: Session = Depends(get_db)):
             status_code=500,  # Internal Server Error
             detail=str(db_error)
         )
-    return db_subject
+    return db_subject.id
 
 
 @app.get("/subjects_with_careers/", response_model=List[SubjectCareerSchema])
@@ -209,16 +168,17 @@ def get_select_subjects(
     return subjects
 
 
-@app.post("/leads/")
+@app.post("/leads/", response_model=int)
 async def create_lead(
     request: Request,
+    lead: LeadCreateSchema,
     session: Session = Depends(get_db)
 ):
     try:
-        raw_data = await request.body()
-        data_str = raw_data.decode("utf-8")
-        data_dict = json.loads(data_str)
-        lead = LeadCreateSchema(**data_dict)
+        # raw_data = await request.body()
+        # data_str = raw_data.decode("utf-8")
+        # data_dict = json.loads(data_str)
+        # lead = LeadCreateSchema(**data_dict)
         db_lead = Lead(**lead.dict())
         session.add(db_lead)
         session.commit()
@@ -239,7 +199,7 @@ async def create_lead(
             status_code=500,  # Internal Server Error
             detail=str(db_error)
         )
-    return db_lead
+    return db_lead.id
 
 
 @app.get("/leads/", response_model=List[LeadSchema])
@@ -277,16 +237,17 @@ def find_leads(
 #     return lead
 
 
-@app.post("/enrollment-study/", response_model=EnrollmentStudySchema)
+@app.post("/enrollment-study/", response_model=int)
 async def create_enrollment_study(
     request: Request,
+    enrollment_study: EnrollmentStudyCreateSchema,
     session: Session = Depends(get_db),
 ):
     try:
-        raw_data = await request.body()
-        data_str = raw_data.decode("utf-8")
-        data_dict = json.loads(data_str)
-        enrollment_study = EnrollmentStudyCreateSchema(**data_dict)
+        # raw_data = await request.body()
+        # data_str = raw_data.decode("utf-8")
+        # data_dict = json.loads(data_str)
+        # enrollment_study = EnrollmentStudyCreateSchema(**data_dict)
         db_enrollment_study = EnrollmentStudy(**enrollment_study.dict())
         session.add(db_enrollment_study)
         session.commit()
@@ -307,7 +268,7 @@ async def create_enrollment_study(
             status_code=500,  # Internal Server Error
             detail=str(db_error)
         )
-    return db_enrollment_study
+    return db_enrollment_study.id
 
 
 @app.get("/enrollment-study/", response_model=List[EnrollmentStudyListSchema])

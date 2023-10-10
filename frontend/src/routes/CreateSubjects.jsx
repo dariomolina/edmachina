@@ -3,13 +3,15 @@ import { ConfirmationModal } from './components/ConfirmationModal'
 
 const CreateSubjects = () => {
 
-  const [formState, setFormState] = useState({
+  const initialForm = {
     subjectName: '',
     studyDuration: 0,
 		careerId: 0
-  })
+  } 
+
+  const [formState, setFormState] = useState(initialForm)
   const [status, setStatus ] = useState(500)
-  const [responseOk, setResponseOk] = useState(false)
+  const [responseValue, setResponseValue] = useState(0)
 	const [careerList, setCareerList] = useState([])
 
   const { subjectName, studyDuration, careerId } = formState
@@ -40,9 +42,9 @@ const CreateSubjects = () => {
 			}),
     })
     setStatus(response.status)
-    setResponseOk(response.ok)
     const data = await response.json();
-    console.log('Materia creada:', data);
+    setResponseValue(data)
+    setFormState(initialForm)
   };
 
 	const handleGetCareer = async () => {
@@ -111,7 +113,7 @@ const CreateSubjects = () => {
           <ConfirmationModal
             onConfirm={handleConfirmSubmit}
             status={ status }
-            responseOk={ responseOk }
+            responseValue={ responseValue }
           />
         </form>
         <button type="submit" className="btn btn-lg btn-primary mt-5 w-100" data-bs-target="#exampleModalToggle" data-bs-toggle="modal">Great, thanks!</button>

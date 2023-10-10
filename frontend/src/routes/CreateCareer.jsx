@@ -3,12 +3,14 @@ import { ConfirmationModal } from './components/ConfirmationModal'
 
 const CreateCareer = () => {
 
-  const [formState, setFormState] = useState({
+  const initialForm = {
     careerName: '',
     studyDuration: 0
-  })
+  }
+
+  const [formState, setFormState] = useState(initialForm)
   const [status, setStatus ] = useState(500)
-  const [responseOk, setResponseOk] = useState(false)
+  const [responseValue, setResponseValue] = useState(0)
 
   const { careerName, studyDuration } = formState
 
@@ -28,15 +30,15 @@ const CreateCareer = () => {
     const url = `${import.meta.env.VITE_BACKEND_URL}/career`
     const response = await fetch(url , {
       method: "POST",
-      //headers: {
-      //  'Content-Type': 'application/json',
-      //},
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ name: careerName, study_duration: parseInt(studyDuration) }),
     })
     setStatus(response.status)
-    setResponseOk(response.ok)
     const data = await response.json();
-    console.log('Carrera creada:', data);
+    setResponseValue(data)
+    setFormState(initialForm)
   };
 
   return (
@@ -70,7 +72,7 @@ const CreateCareer = () => {
           <ConfirmationModal
             onConfirm={handleConfirmSubmit}
             status={ status }
-            responseOk={ responseOk }
+            responseValue={ responseValue }
           />
         </form>
         <button type="submit" className="btn btn-lg btn-primary mt-5 w-100" data-bs-target="#exampleModalToggle" data-bs-toggle="modal">Great, thanks!</button>

@@ -7,7 +7,6 @@ from sqlalchemy import pool
 import settings
 
 # Models to generate migrations
-from models.users import User
 from models.leads import Lead
 from models.academic import Career, Subjects
 from models.enrollment import EnrollmentStudy
