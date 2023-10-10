@@ -1,74 +1,29 @@
+### Desafío:
+Necesitamos un proceso de registración de los leads a procesar. Estos leads, son personas
+cursando materias de una carrera. Lo que se necesita registrar es la persona y las N materias
+que cursa en N carreras, donde N va de 0 a X.
+Para ello se pide realizar:
 
-## Instalación del proyecto
+#### * Front (BONUS EXTRA) – NO ES OBLIGATORIO EL FRONT
+Interfaz con validación de los campos a ingresar (Nombre completo, email, dirección, teléfono,
+materia, tiempo de cursado, carrera, año de inscripción, número de veces cursada la materia, y
+otros que se consideren necesario). Una vez cargado el lead de forma satisfactoria, tiene que
+mostrar una confirmación con el id del registro para trazabilidad.
+NOTA: Si no se ejecuta el bono, la carga del LEAD puede ser realizada previamente a mano. O
+pasando el String directamente a la API. (ver como ingresa en la sección BACK)
 
-#### Pararse en la carpeta edmachina, donde se encuentra el docker-compose.yml y correr comando de docker para buildear imagenes de docker
-* docker-compose build
+#### * Back (NECESARIO)
+Api restful que procese la carga, y disponibilice el resultado de los leads cargados paginados
+en otro endpoint, mas un get por id de registro. El mismo debe ser realizado en Python con el
+framework de FastAPI.
 
-#### Para ejecutar los contenedores de backend, frontend y postgres
-* docker-compose up -d
+#### * Infra (NECESARIO)
+Dockerizar el frontend (ej el caso de tomar el Bonus) y el backend y componer (docker
+compose) las soluciones. Utilizar un motor relacional (postgres preferentemente) para la
+persistencia.
 
-#### Ingresar al contenedor backend donde se encuentra en ejecución FastApi
-* docker exec -it backend bash
-
-#### Una vez a dentro del contenedor backend, ejecutar el siguiente comando para reflejar las migraciones en la base de datos
-* alembic upgrade c42969
-
-#### Luego de eso, ya podremos ingresar a la sigueinte url para interactuar con la aplicación
-* http://localhost:3000/
-
-
-
-## Documentación de la Api
-
-#### Una vez que los contenedores estén en ejecición, se puede tener acceso a la documentación de los endpoints realizados, ingresando a:
-* http://localhost:8000/docs
-
-
-
-## Como esta formada la aplicación:
-### La aplicacion cuenta con varios apartados de creación de registros y listado de los mismos.
-
-##### * Crear Carrera: Vista para la creación de las carreras
-##### * Creacion de Materias: Podemos continuar con la creacion de las materias que estará relacionada a alguna de las carreras creadas previamente.
-#### * Creacion de Leads: Un registro para creacion de un lead con los datos personales
-#### * Creación de una Inscripción: Para registrar el cursado de materia y carrera de un lead
-#### * Lista de Carreras: Listado de los registros de las carreras
-#### * Lista de Materias: Vista que muestra las materias disponibles para cursar
-#### * Lista de leads: Lista de los leads registados en la base de datos.
-#### * Lista de Inscripciones: Lista de los leads que estan inscriptos a una materia/carrera
-
-
-
-## Pasos para ingresar a la base de datos del challenge
-
-#### Ingresar al contenedor de postgres
-* docker exec -it db bash
-
-#### para ingresar a la base de datos
-* psql -U edmachinauser -d edmachinadb
-
-
-## Pasos que se realizaron para instalar el front
-Para el front use React
-* npm create vite@latest
-* buscamos e instalamos react router dom https://reactrouter.com/en/main
-* npm install react-router-dom
-
-
-
-## Pasos que se realizaron para instalar alembic (No hace falta correr nuevamente)
-
-#### Agregar alembic a requirements.txt
-* alembic==1.12.0
-
-#### Ir al contenedor de backend y ejeutar este comando para generar el folder alembic y alembic.ini
-* alembic init alembic
-
-#### IMPORTANTE: para crear migraciones con alembic, debemos importar los modelos en env.py
-* User, Lead, Career, Subjects, EnrollmentStudy
-
-#### crear los archivos de migraciones: ingresar al contenedor de backend y ejecutar:
-* alembic revision --autogenerate -m "Create first models"
-
-#### Para reflejar las migraciones en la base de datos:
-* alembic upgrade c42969
+#### * Codigo (NECESARIO)
+Disponibilizar la solución en un repositorio git público, puede ser github. Documentar la solución
+tanto de manera funcional como técnica en el readme del repositorio.
+Una vez finalizado el challenge, solo se tiene que presentar la url al repositorio público por
+email con un tag de la rama principal donde queden congelados los cambios.
