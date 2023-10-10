@@ -26,4 +26,4 @@ persistencia.
 Disponibilizar la solución en un repositorio git público, puede ser github. Documentar la solución
 tanto de manera funcional como técnica en el readme del repositorio.
 Una vez finalizado el challenge, solo se tiene que presentar la url al repositorio público por
-email con un tag de la rama principal donde queden congelados los cambios. 
+email con un tag de la rama principal donde queden congelados los cambios.
