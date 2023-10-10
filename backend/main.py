@@ -32,12 +32,18 @@ async def create_career(
     career: CareerCreateSchema,
     session: Session = Depends(get_db)
 ):
+    """
+    Create a new academic career.
+
+    Args:
+        request (Request): The HTTP request.
+        career (CareerCreateSchema): The data of the career to create.
+        session (Session, optional): The database session. Defaults to Depends(get_db).
+
+    Returns:
+        int: The ID of the created career.
+    """
     try:
-        # import pdb; pdb.set_trace()
-        # raw_data = await request.body()
-        # data_str = raw_data.decode("utf-8")
-        # data_dict = json.loads(data_str)
-        # career = CareerCreateSchema(**data_dict)
         db_career = Career(**career.dict())
         session.add(db_career)
         session.commit()
@@ -67,14 +73,31 @@ async def create_career(
 
 @app.get("/career/", response_model=List[CareerSchema])
 def get_careers(skip: int = 0, limit: int = 10, session: Session = Depends(get_db)):
+    """
+    Get a list of academic careers.
+
+    Args:
+        skip (int, optional): The number of records to skip. Defaults to 0.
+        limit (int, optional): The maximum number of records to return. Defaults to 10.
+        session (Session, optional): The database session. Defaults to Depends(get_db).
+
+    Returns:
+        List[CareerSchema]: The list of academic careers.
+    """
     careers = session.query(Career).offset(skip).limit(limit).all()
     return careers
 
 
 @app.get("/select-careers/", response_model=List[CareerSelectSchema])
-def get_select_subjects(session: Session = Depends(get_db)):
+def get_select_careers(session: Session = Depends(get_db)):
     """
-    Endpoint usado para el selector de carreras, se envia [{id, name}]
+    Get a list of academic careers for selection.
+
+    Args:
+        session (Session, optional): The database session. Defaults to Depends(get_db).
+
+    Returns:
+        List[CareerSelectSchema]: The list of academic careers for selection.
     """
     careers = session.query(Career.id, Career.name).all()
     careers = [
@@ -90,13 +113,17 @@ async def create_subject(
     session: Session = Depends(get_db)
 ):
     """
-    Endpoint para creacion de materia
+    Endpoint for subject creation.
+
+    Args:
+        request (Request): The HTTP request.
+        subject (SubjectsCreateSchema): The data for the subject to be created.
+        session (Session, optional): The database session. Defaults to Depends(get_db).
+
+    Returns:
+        int: The ID of the created subject.
     """
     try:
-        # raw_data = await request.body()
-        # data_str = raw_data.decode("utf-8")
-        # data_dict = json.loads(data_str)
-        # subject = SubjectsCreateSchema(**data_dict)
         db_subject = Subjects(**subject.dict())
         session.add(db_subject)
         session.commit()
@@ -126,6 +153,17 @@ def get_subjects_with_careers(
     limit: int = 10,
     session: Session = Depends(get_db)
 ):
+    """
+    Get a list of subjects with associated academic careers.
+
+    Args:
+        skip (int, optional): The number of records to skip. Defaults to 0.
+        limit (int, optional): The maximum number of records to return. Defaults to 10.
+        session (Session, optional): The database session. Defaults to Depends(get_db).
+
+    Returns:
+        List[SubjectCareerSchema]: The list of subjects with associated academic careers.
+    """
     try:
         subjects_with_careers = session.query(
             Subjects.id,
@@ -161,6 +199,16 @@ def get_select_subjects(
     career_id: int,
     session: Session = Depends(get_db)
 ):
+    """
+    Get a list of subjects for selection within a specific academic career.
+
+    Args:
+        career_id (int): The ID of the academic career.
+        session (Session, optional): The database session. Defaults to Depends(get_db).
+
+    Returns:
+        List[SubjectsListSchema]: The list of subjects available for selection.
+    """
     subjects = session.query(Subjects.id, Subjects.name).filter(Subjects.career_id == career_id)
     subjects = [
         SubjectsListSchema(id=int(_id), name=name) for _id, name in subjects
@@ -174,11 +222,18 @@ async def create_lead(
     lead: LeadCreateSchema,
     session: Session = Depends(get_db)
 ):
+    """
+    Create a new lead or prospective student.
+
+    Args:
+        request (Request): The HTTP request.
+        lead (LeadCreateSchema): The data for the lead to be created.
+        session (Session, optional): The database session. Defaults to Depends(get_db).
+
+    Returns:
+        int: The ID of the created lead.
+    """
     try:
-        # raw_data = await request.body()
-        # data_str = raw_data.decode("utf-8")
-        # data_dict = json.loads(data_str)
-        # lead = LeadCreateSchema(**data_dict)
         db_lead = Lead(**lead.dict())
         session.add(db_lead)
         session.commit()
@@ -206,6 +261,15 @@ async def create_lead(
 def get_lead(
     session: Session = Depends(get_db),
 ):
+    """
+    Get a list of leads or prospective students.
+
+    Args:
+        session (Session, optional): The database session. Defaults to Depends(get_db).
+
+    Returns:
+        List[LeadSchema]: The list of leads or prospective students.
+    """
     lead = session.query(Lead).all()
     session.close()
     return lead
@@ -215,6 +279,15 @@ def get_lead(
 def find_leads(
     session: Session = Depends(get_db)
 ):
+    """
+    Find leads or prospective students for selection.
+
+    Args:
+        session (Session, optional): The database session. Defaults to Depends(get_db).
+
+    Returns:
+        List[LeadListSchema]: The list of leads or prospective students for selection.
+    """
     leads = session.query(Lead.id, Lead.first_name, Lead.last_name).all()
     leads = [
         LeadListSchema(
@@ -227,27 +300,24 @@ def find_leads(
     return leads
 
 
-# @app.get("/leads/{lead_id}")
-# def get_lead(
-#     lead_id: int,
-#     session: Session = Depends(get_db)
-# ):
-#     lead = session.query(Lead).filter(Lead.id == lead_id).first()
-#     session.close()
-#     return lead
-
-
 @app.post("/enrollment-study/", response_model=int)
 async def create_enrollment_study(
     request: Request,
     enrollment_study: EnrollmentStudyCreateSchema,
     session: Session = Depends(get_db),
 ):
+    """
+    Create a new enrollment study record.
+
+    Args:
+        request (Request): The HTTP request.
+        enrollment_study (EnrollmentStudyCreateSchema): The data for the enrollment study record to be created.
+        session (Session, optional): The database session. Defaults to Depends(get_db).
+
+    Returns:
+        int: The ID of the created enrollment study record.
+    """
     try:
-        # raw_data = await request.body()
-        # data_str = raw_data.decode("utf-8")
-        # data_dict = json.loads(data_str)
-        # enrollment_study = EnrollmentStudyCreateSchema(**data_dict)
         db_enrollment_study = EnrollmentStudy(**enrollment_study.dict())
         session.add(db_enrollment_study)
         session.commit()
@@ -275,6 +345,15 @@ async def create_enrollment_study(
 def get_lead(
     session: Session = Depends(get_db),
 ):
+    """
+    Get a list of enrollment study records.
+
+    Args:
+        session (Session, optional): The database session. Defaults to Depends(get_db).
+
+    Returns:
+        List[EnrollmentStudyListSchema]: The list of enrollment study records.
+    """
     enrollments_study = session.query(
         EnrollmentStudy.id,
         Lead.first_name,
