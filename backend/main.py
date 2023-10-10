@@ -1,7 +1,7 @@
 import json
 from typing import List
 
-from fastapi import FastAPI, Request, Depends, HTTPException
+from fastapi import FastAPI, Request, Depends, HTTPException, status
 from psycopg2.errors import UniqueViolation
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -52,17 +52,17 @@ async def post_create_career(
         db_career = create_career(session, career=career)
     except json.JSONDecodeError as json_error:
         raise HTTPException(
-            status_code=400,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(json_error)
         )
     except ValueError as validation_error:
         raise HTTPException(
-            status_code=422,  # Unprocessable Entity
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,  # Unprocessable Entity
             detail=str(validation_error)
         )
     except IntegrityError as db_error:
         raise HTTPException(
-            status_code=500,  # Internal Server Error
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,  # Internal Server Error
             detail=str(db_error)
         )
 
@@ -125,17 +125,17 @@ async def post_create_subject(
         db_subject = create_subject(session, subject=subject)
     except json.JSONDecodeError as json_error:
         raise HTTPException(
-            status_code=400,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(json_error)
         )
     except ValueError as validation_error:
         raise HTTPException(
-            status_code=422,  # Unprocessable Entity
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,  # Unprocessable Entity
             detail=str(validation_error)
         )
     except IntegrityError as db_error:
         raise HTTPException(
-            status_code=500,  # Internal Server Error
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,  # Internal Server Error
             detail=str(db_error)
         )
     return db_subject.id
@@ -162,12 +162,12 @@ def get_subjects_with_careers(
         subjects_with_careers = get_subjects_by_careers(session, skip=skip, limit=limit)
     except json.JSONDecodeError as json_error:
         raise HTTPException(
-            status_code=400,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(json_error)
         )
     except ValueError as validation_error:
         raise HTTPException(
-            status_code=422,  # Unprocessable Entity
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,  # Unprocessable Entity
             detail=str(validation_error)
         )
     return subjects_with_careers
@@ -216,29 +216,29 @@ async def post_create_lead(
         db_lead = create_lead(session, lead=lead)
     except json.JSONDecodeError as json_error:
         raise HTTPException(
-            status_code=400,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(json_error)
         )
     except ValueError as validation_error:
         raise HTTPException(
-            status_code=422,  # Unprocessable Entity
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,  # Unprocessable Entity
             detail=str(validation_error)
         )
     except IntegrityError as db_error:
         raise HTTPException(
-            status_code=500,  # Internal Server Error
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,  # Internal Server Error
             detail=str(db_error)
         )
     except UniqueViolation as db_unique_error:
         raise HTTPException(
-            status_code=500,  # Unique error
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,  # Unique error
             detail=str(db_unique_error)
         )
     return db_lead.id
 
 
 @app.get("/leads/", response_model=List[LeadSchema])
-def get_lead(
+def get_leads(
     session: Session = Depends(get_db),
 ):
     """
@@ -254,8 +254,42 @@ def get_lead(
     return lead
 
 
+@app.get("/lead/{lead_id}", response_model=LeadSchema)
+def find_lead(
+    lead_id: int,
+    session: Session = Depends(get_db),
+):
+    """
+    Get a lead by its ID.
+
+    Args:
+        lead_id (int): The ID of the lead to retrieve.
+        session (Session, optional): The database session. Defaults to Depends(get_db).
+
+    Returns:
+        LeadSchema: The lead information.
+    """
+    lead = session.query(Lead).filter(Lead.id == lead_id).first()
+    if not lead:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Lead with ID {lead_id} not found",
+        )
+    lead = LeadSchema(**{
+        "id": lead.id,
+        "first_name": lead.first_name,
+        "last_name": lead.last_name,
+        "dni": lead.dni,
+        "email": lead.email,
+        "address": lead.address,
+        "phone": lead.phone,
+        "registration_date": lead.registration_date
+    })
+    return lead
+
+
 @app.get("/select-leads/", response_model=List[LeadListSchema])
-def find_leads(
+def get_select_leads(
     session: Session = Depends(get_db)
 ):
     """
@@ -295,17 +329,17 @@ async def post_create_enrollment_study(
         )
     except json.JSONDecodeError as json_error:
         raise HTTPException(
-            status_code=400,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(json_error)
         )
     except ValueError as validation_error:
         raise HTTPException(
-            status_code=422,  # Unprocessable Entity
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,  # Unprocessable Entity
             detail=str(validation_error)
         )
     except IntegrityError as db_error:
         raise HTTPException(
-            status_code=500,  # Internal Server Error
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,  # Internal Server Error
             detail=str(db_error)
         )
     return db_enrollment_study.id

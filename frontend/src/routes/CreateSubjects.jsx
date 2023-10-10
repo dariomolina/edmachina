@@ -115,7 +115,7 @@ const CreateSubjects = () => {
             responseValue={ responseValue }
           />
         </form>
-        <button type="submit" className="btn btn-lg btn-primary mt-5 w-100" data-bs-target="#exampleModalToggle" data-bs-toggle="modal">Great, thanks!</button>
+        <button type="submit" className="btn btn-lg btn-primary mt-5 w-100" data-bs-target="#exampleModalToggle" data-bs-toggle="modal">Crear Materia</button>
       </div>
     </div>
     </>

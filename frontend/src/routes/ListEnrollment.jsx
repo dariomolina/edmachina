@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
+import { Pagination } from './components/Pagination';
 
 const ListEnrollmentStudy = () => {
   const initialData = { items: [], count: 0 }
@@ -23,7 +24,6 @@ const ListEnrollmentStudy = () => {
       const response = await axios({method, url, headers, params})
       const response_data = await response.data
       setData(response_data)
-      console.log(response_data)
     }
     getEnrollmentsStudy()
   }, [page])
@@ -63,21 +63,11 @@ const ListEnrollmentStudy = () => {
         </tbody>
       </table>
     </div>
-    <nav aria-label="Page navigation example">
-      <ul className="pagination justify-content-center">
-        <li className={`page-item ${page === 1 ? 'disabled' : ''}`}>
-          <button className="page-link" onClick={() => setPage(page - 1)}>Previous</button>
-        </li>
-        {Array.from({ length: totalPages }, (_, i) => (
-          <li className={`page-item ${i + 1 === page ? 'active' : ''}`} key={i}>
-            <button className="page-link" onClick={() => setPage(i + 1)}>{i + 1}</button>
-          </li>
-        ))}
-        <li className={`page-item ${page === totalPages ? 'disabled' : ''}`}>
-          <button className="page-link" onClick={() => setPage(page + 1)}>Next</button>
-        </li>
-      </ul>
-    </nav>
+    <Pagination
+      totalPages={ totalPages }
+      page={ page }
+      setPage={ setPage }
+    />
     </>
   )
 }
