@@ -18,7 +18,7 @@ def create_enrollment_study(
     return db_enrollment_study
 
 
-def get_enrollment_study(session: Session):
+def get_enrollment_study(session: Session, skip, limit):
     enrollments_study = session.query(
         EnrollmentStudy.id,
         Lead.first_name,
@@ -35,7 +35,7 @@ def get_enrollment_study(session: Session):
     ).join(
         Career,
         Subjects.career_id == Career.id,
-    ).order_by(Lead.dni).all()
+    ).order_by(EnrollmentStudy.registration_date.desc()).offset(skip).limit(limit).all()
     enrollments_study = [
         EnrollmentStudyListSchema(
             id=_id,
@@ -50,3 +50,8 @@ def get_enrollment_study(session: Session):
     ]
     session.close()
     return enrollments_study
+
+
+def enrollment_study_count(session: Session):
+    enrollment_count = session.query(EnrollmentStudy).count()
+    return enrollment_count

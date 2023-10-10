@@ -5,7 +5,7 @@ const ListLead = () => {
   const [data, setData] = useState([]);
 
   const method = 'GET'
-  const url = 'http://localhost:8000/leads/'
+  const url = `${import.meta.env.VITE_BACKEND_URL}/leads/`
   const headers = {
     'Content-Type': 'application/json',
     //'Authorization': 'Bearer your-access-token',

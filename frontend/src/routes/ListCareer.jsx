@@ -5,7 +5,7 @@ const ListCareer = () => {
   const [data, setData] = useState([]);
 
   const method = 'GET'
-  const url = 'http://localhost:8000/career/'
+  const url = `${import.meta.env.VITE_BACKEND_URL}/career/`
   const headers = {
     'Content-Type': 'application/json',
     //'Authorization': 'Bearer your-access-token',

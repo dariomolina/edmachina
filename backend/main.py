@@ -2,19 +2,20 @@ import json
 from typing import List
 
 from fastapi import FastAPI, Request, Depends, HTTPException
+from psycopg2.errors import UniqueViolation
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from starlette.middleware.cors import CORSMiddleware
-from psycopg2.errors import UniqueViolation
 
 from models.academic import Career, Subjects
 from models.leads import Lead
 from schemas.careers import CareerCreateSchema, CareerSchema, CareerSelectSchema
-from schemas.enrollment_study import EnrollmentStudyCreateSchema, EnrollmentStudyListSchema
+from schemas.enrollment_study import EnrollmentStudyCreateSchema, EnrollmentStudyListSchema, \
+    EnrollmentStudyPaginationSchema
 from schemas.leads import LeadCreateSchema, LeadSchema, LeadListSchema
 from schemas.subjects import SubjectsCreateSchema, SubjectsListSchema, SubjectCareerSchema
 from services.db.careers import create_career
-from services.db.enrollment_study import create_enrollment_study, get_enrollment_study
+from services.db.enrollment_study import create_enrollment_study, get_enrollment_study, enrollment_study_count
 from services.db.leads import create_lead, get_leads_selector
 from services.db.subjects import create_subject, get_subjects_by_careers
 from settings import get_db
@@ -310,18 +311,25 @@ async def post_create_enrollment_study(
     return db_enrollment_study.id
 
 
-@app.get("/enrollment-study/", response_model=List[EnrollmentStudyListSchema])
+@app.get("/enrollment-study/", response_model=EnrollmentStudyPaginationSchema)
 def find_enrollment_study(
+    skip: int = 0,
+    limit: int = 10,
     session: Session = Depends(get_db),
 ):
     """
-    Get a list of enrollment study records.
+    Get a dict with a list of enrollment study records adn enrollment study count.
 
     Args:
+        skip (int, optional): Number of records to skip. Defaults to 0.
+        limit (int, optional): Maximum number of records to return. Defaults to 10.
         session (Session, optional): The database session. Defaults to Depends(get_db).
 
     Returns:
-        List[EnrollmentStudyListSchema]: The list of enrollment study records.
+        {items: List[EnrollmentStudyListSchema], count: int}:
+        The list of enrollment study records.
     """
-    enrollments_study = get_enrollment_study(session)
-    return enrollments_study
+    enrollments_study = get_enrollment_study(session, skip=skip, limit=limit)
+    count = enrollment_study_count(session)
+    return {"items": enrollments_study, "count": count}
+

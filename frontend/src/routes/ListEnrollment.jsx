@@ -1,16 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 
 const ListEnrollmentStudy = () => {
-  const [data, setData] = useState([]);
+  const initialData = { items: [], count: 0 }
+  const [data, setData] = useState(initialData)
+  const [page, setPage] = useState(1)
+  const itemsPerPage = 10; // Número de elementos por página
 
   const method = 'GET'
-  const url = 'http://localhost:8000/enrollment-study/'
+  const url = `${import.meta.env.VITE_BACKEND_URL}/enrollment-study/`
   const headers = {
     'Content-Type': 'application/json',
     //'Authorization': 'Bearer your-access-token',
   }
-  const params = {}
+  const params = {
+    skip: (page - 1) * itemsPerPage,
+    limit: itemsPerPage
+  }
 
   useEffect(() => {
     const getEnrollmentsStudy = async () => {
@@ -19,8 +25,11 @@ const ListEnrollmentStudy = () => {
       setData(response_data)
       console.log(response_data)
     }
-    getEnrollmentsStudy();
-  }, []);
+    getEnrollmentsStudy()
+  }, [page])
+
+
+  const totalPages = Math.ceil(data.count / itemsPerPage)
 
   return (
     <>
@@ -38,7 +47,7 @@ const ListEnrollmentStudy = () => {
           </tr>
         </thead>
         <tbody>
-          {data.map((item) => {
+          {data.items.map((item) => {
             return (
               <tr key={ item.id } scope="row">
                 <td >{ item.id }</td>
@@ -54,6 +63,21 @@ const ListEnrollmentStudy = () => {
         </tbody>
       </table>
     </div>
+    <nav aria-label="Page navigation example">
+      <ul className="pagination justify-content-center">
+        <li className={`page-item ${page === 1 ? 'disabled' : ''}`}>
+          <button className="page-link" onClick={() => setPage(page - 1)}>Previous</button>
+        </li>
+        {Array.from({ length: totalPages }, (_, i) => (
+          <li className={`page-item ${i + 1 === page ? 'active' : ''}`} key={i}>
+            <button className="page-link" onClick={() => setPage(i + 1)}>{i + 1}</button>
+          </li>
+        ))}
+        <li className={`page-item ${page === totalPages ? 'disabled' : ''}`}>
+          <button className="page-link" onClick={() => setPage(page + 1)}>Next</button>
+        </li>
+      </ul>
+    </nav>
     </>
   )
 }

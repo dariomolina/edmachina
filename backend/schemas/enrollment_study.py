@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 
 from pydantic import BaseModel
 
@@ -29,3 +30,8 @@ class EnrollmentStudyListSchema(BaseModel):
     career_name: str
     subject_name: str
     registration_date: datetime
+
+
+class EnrollmentStudyPaginationSchema(BaseModel):
+    items: List[EnrollmentStudyListSchema]
+    count: int
